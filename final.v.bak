@@ -1,0 +1,112 @@
+module final(DATA_R, DATA_G, DATA_B, COMM, a, b, c, d, e, f, g, CLK, left, right, speed, rotation, clear, timeout);
+    output reg [7:0] DATA_R, DATA_G, DATA_B;
+    output reg [3:0] COMM;
+    output reg a, b, c, d, e, f, g;
+    input CLK, left, right, speed, rotation, clear, timeout;
+    
+    integer test = 0, origin = 1, gg = 0, score = 0, rotationtime, find, fivetime = 0, color = 0, randomnum = 0, n, n1, n2, n3;
+    
+    reg [7:0] one[7:0];
+    reg [7:0] two[7:0];
+    reg [7:0] three[7:0];
+    reg [7:0] four[7:0];
+    reg [7:0] five[7:0];
+    reg [7:0] six[7:0];
+    reg [7:0] seven[7:0];
+    reg [7:0] start[7:0];
+    reg [7:0] zero[7:0];
+    reg [7:0] xx[7:0];
+    reg [7:0] tmp[7:0];
+    reg [7:0] now[7:0];
+    reg [7:0] R[7:0];
+    reg [7:0] G[7:0];
+    reg [7:0] B[7:0];
+    reg [2:0] cnt, num;
+    
+    // 分頻模組例化
+    divfreq_1 div1(CLK_div_1, CLK);
+    divfreq_2 div2(CLK_div_2, CLK);
+
+    // 初始化
+    initial begin
+        cnt = 0;
+        DATA_R = 8'b11111111;
+        DATA_G = 8'b11111111;
+        DATA_B = 8'b11111111;
+        COMM = 4'b1000;
+        
+        // 初始化圖案
+        one[0] = 8'b11111111; one[1] = 8'b11111111; one[2] = 8'b11111111; one[3] = 8'b11111100;
+        one[4] = 8'b11111100; one[5] = 8'b11111111; one[6] = 8'b11111111; one[7] = 8'b11111111;
+
+        two[0] = 8'b11111111; two[1] = 8'b11111111; two[2] = 8'b11111110; two[3] = 8'b11111110;
+        two[4] = 8'b11111110; two[5] = 8'b11111110; two[6] = 8'b11111111; two[7] = 8'b11111111;
+
+        three[0] = 8'b11111111; three[1] = 8'b11111111; three[2] = 8'b11111111; three[3] = 8'b11111101;
+        three[4] = 8'b11111100; three[5] = 8'b11111110; three[6] = 8'b11111111; three[7] = 8'b11111111;
+
+        four[0] = 8'b11111111; four[1] = 8'b11111111; four[2] = 8'b11111110; four[3] = 8'b11111100;
+        four[4] = 8'b11111101; four[5] = 8'b11111111; four[6] = 8'b11111111; four[7] = 8'b11111111;
+
+        five[0] = 8'b11111111; five[1] = 8'b11111111; five[2] = 8'b11111111; five[3] = 8'b11111110;
+        five[4] = 8'b11111110; five[5] = 8'b11111100; five[6] = 8'b11111111; five[7] = 8'b11111111;
+
+        six[0] = 8'b11111111; six[1] = 8'b11111111; six[2] = 8'b11111100; six[3] = 8'b11111110;
+        six[4] = 8'b11111110; six[5] = 8'b11111111; six[6] = 8'b11111111; six[7] = 8'b11111111;
+
+        seven[0] = 8'b11111111; seven[1] = 8'b11111111; seven[2] = 8'b11111111; seven[3] = 8'b11111110;
+        seven[4] = 8'b11111100; seven[5] = 8'b11111110; seven[6] = 8'b11111111; seven[7] = 8'b11111111;
+
+        start[0] = 8'b01111110; start[1] = 8'b00000000; start[2] = 8'b01111110; start[3] = 8'b11111111;
+        start[4] = 8'b00000000; start[5] = 8'b11110111; start[6] = 8'b11110111; start[7] = 8'b00000000;
+
+        zero[0] = 8'b11111111; zero[1] = 8'b11111111; zero[2] = 8'b11111111; zero[3] = 8'b11111111;
+        zero[4] = 8'b11111111; zero[5] = 8'b11111111; zero[6] = 8'b11111111; zero[7] = 8'b11111111;
+
+        xx[0] = 8'b01111110; xx[1] = 8'b10111101; xx[2] = 8'b11011011; xx[3] = 8'b11100111;
+        xx[4] = 8'b11100111; xx[5] = 8'b11011011; xx[6] = 8'b10111101; xx[7] = 8'b01111110;
+    end
+
+    // 時序邏輯
+    always @(posedge CLK_div_2) begin
+        DATA_R = xx[cnt];
+    end
+endmodule
+
+module divfreq_1(output reg CLK_div, input CLK);
+    reg [24:0] Count;
+    always @(posedge CLK) begin
+        if (Count > 25000) begin
+            Count <= 25'b0;
+            CLK_div <= ~CLK_div;
+        end else
+            Count <= Count + 1'b1;
+    end
+endmodule
+module divfreq_2(output reg CLK_div, input CLK);
+    reg[24:0] Count;
+
+    always @(posedge CLK)
+    begin
+        if (Count > 833333)  // 30 Hz 更新頻率
+        begin
+            Count <= 25'b0;
+            CLK_div <= ~CLK_div;
+        end
+        else
+            Count <= Count + 1'b1;
+    end
+endmodule
+
+
+
+/*module divfreq_2(output reg CLK_div, input CLK);
+    reg [24:0] Count;
+    always @(posedge CLK) begin
+        if (Count > 6250000) begin
+            Count <= 25'b0;
+            CLK_div <= ~CLK_div;
+        end else
+            Count <= Count + 1'b1;
+    end
+endmodule*/
